@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <title>Emotion Detection Glasses</title>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
 </head>
-
 <body>
   <h2>Emotion Detection</h2>
-  <video id="webcam" autoplay playsinline width="300" height="200"></video>
+  <div id="webcam-container"></div>
   <div id="label-container"></div>
 
   <script type="text/javascript">
-    // 👇 EDIT THIS LINE ONLY 👇
+    // 👇 Change only this line with your GitHub Pages link
     const URL = "https://japjeet848.github.io/Emotion_Model/";
 
     let model, webcam, labelContainer, maxPredictions;
@@ -25,13 +23,13 @@
       model = await tmImage.load(modelURL, metadataURL);
       maxPredictions = model.getTotalClasses();
 
-      const flip = true;
+      const flip = true; 
       webcam = new tmImage.Webcam(300, 200, flip);
-      await webcam.setup();
+      await webcam.setup(); 
       await webcam.play();
       window.requestAnimationFrame(loop);
 
-      document.getElementById("webcam").appendChild(webcam.canvas);
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
       labelContainer = document.getElementById("label-container");
       for (let i = 0; i < maxPredictions; i++) {
         labelContainer.appendChild(document.createElement("div"));
@@ -56,5 +54,4 @@
     init();
   </script>
 </body>
-
 </html>
