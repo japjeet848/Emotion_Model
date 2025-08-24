@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Emotion Detection Glasses</title>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotion Detection</title>
+
+  <!-- Teachable Machine library -->
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
 </head>
 <body>
-  <h2>Emotion Detection</h2>
+  <h1>Emotion Detection</h1>
+  <button type="button" onclick="init()">Start</button>
   <div id="webcam-container"></div>
   <div id="label-container"></div>
 
   <script type="text/javascript">
-    // 👇 Change only this line with your GitHub Pages link
     const URL = "https://japjeet848.github.io/Emotion_Model/";
-
     let model, webcam, labelContainer, maxPredictions;
 
     async function init() {
@@ -23,9 +25,9 @@
       model = await tmImage.load(modelURL, metadataURL);
       maxPredictions = model.getTotalClasses();
 
-      const flip = true; 
-      webcam = new tmImage.Webcam(300, 200, flip);
-      await webcam.setup(); 
+      const flip = true;
+      webcam = new tmImage.Webcam(200, 200, flip);
+      await webcam.setup();
       await webcam.play();
       window.requestAnimationFrame(loop);
 
@@ -45,13 +47,11 @@
     async function predict() {
       const prediction = await model.predict(webcam.canvas);
       for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction =
+        labelContainer.childNodes[i].innerHTML =
           prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-        labelContainer.childNodes[i].innerHTML = classPrediction;
       }
     }
-
-    init();
   </script>
 </body>
 </html>
+
