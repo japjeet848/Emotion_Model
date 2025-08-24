@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Emotion Detection</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.9.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    #webcam-container canvas {
+      border: 2px solid black;
+      border-radius: 10px;
+    }
+
+    #label-container {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+
+    button {
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Emotion Detection</h1>
+  <button onclick="init()">Start Camera</button>
+  <div id="webcam-container"></div>
+  <div id="label-container"></div>
+
+  <script>
+    const URL = "./"; // model files in same folder
+    let model, webcam, labelContainer, maxPredictions;
+
+    async function init() {
+      try {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        webcam = new tmImage.Webcam(300, 225, true);
+        await webcam.setup(); // asks for camera permission
+        await webcam.play();
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
+        for (let i = 0; i < maxPredictions; i++) {
+          labelContainer.appendChild(document.createElement("div"));
+        }
+
+        window.requestAnimationFrame(loop);
+      } catch (e) {
+        console.error(e);
+        alert("Failed to load model or camera. Check console.");
+      }
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+      for (let i = 0; i < prediction.length; i++) {
+        const p = prediction[i];
+        labelContainer.childNodes[i].innerHTML = `${p.className}: ${(p.probability * 100).toFixed(2)}%`;
+      }
+    }
+  </script>
+</body>
+
+</html>
